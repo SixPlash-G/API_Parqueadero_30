@@ -1,0 +1,97 @@
+DROP TABLE IF EXISTS FACTURAS;
+DROP TABLE IF EXISTS PAGOS;
+DROP TABLE IF EXISTS REGISTRO_INGRESO;
+DROP TABLE IF EXISTS VEHICULOS;
+DROP TABLE IF EXISTS CLIENTES;
+DROP TABLE IF EXISTS PARQUEADERO;
+DROP TABLE IF EXISTS TARIFAS;
+DROP TABLE IF EXISTS USUARIOS;
+
+CREATE TABLE PARQUEADERO.USUARIOS (
+    usuario_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del usuario",
+    nombre VARCHAR(50) NOT NULL COMMENT "Nombre del usuario",
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT "Correo del usuario",
+    celular VARCHAR(15) NOT NULL COMMENT "Número de celular del usuario",
+    password VARCHAR(255) NOT NULL COMMENT "Contraseña del usuario",
+    is_superuser BOOLEAN DEFAULT FALSE COMMENT "Indica si el usuario es un superusuario (1 = True, 0 = False)",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (usuario_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.CLIENTES (
+    cliente_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del cliente",
+    nombre VARCHAR(50) NOT NULL COMMENT "Nombre del cliente",
+    email VARCHAR(100) NOT NULL UNIQUE COMMENT "Correo del cliente",
+    celular VARCHAR(15) NOT NULL COMMENT "Número de celular del cliente",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (cliente_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.VEHICULOS (
+    vehiculo_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del vehículo",
+    cliente_id INT(11) NOT NULL COMMENT "FK - Cliente propietario del vehículo",
+    placa VARCHAR(10) NOT NULL UNIQUE COMMENT "Placa del vehículo",
+    marca VARCHAR(50) NOT NULL COMMENT "Marca del vehículo",
+    modelo VARCHAR(50) NOT NULL COMMENT "Modelo del vehículo",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (vehiculo_id),
+    FOREIGN KEY (cliente_id) REFERENCES CLIENTES(cliente_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.PARQUEADERO (
+    parqueadero_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del parqueadero",
+    total_espacios INT(11) NOT NULL COMMENT "Cantidad total de espacios",
+    espacios_disponibles INT(11) NOT NULL COMMENT "Cantidad de espacios disponibles",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (parqueadero_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.TARIFAS (
+    tarifa_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único de la tarifa",
+    tipo ENUM('ordinaria', 'especial') NOT NULL COMMENT "Tipo de tarifa (Ordinaria = Lunes a Viernes, Especial = Fines de Semana y Festivos)",
+    valor_hora DECIMAL(10,2) NOT NULL COMMENT "Valor de la tarifa por hora",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (tarifa_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.REGISTRO_INGRESO (
+    registro_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del registro de ingreso",
+    vehiculo_id INT(11) NOT NULL COMMENT "FK - Vehículo que ingresa",
+    usuario_id INT(11) NOT NULL COMMENT "FK - Usuario que registra la entrada",
+    parqueadero_id INT(11) NOT NULL COMMENT "FK - Parqueadero donde ingresa el vehículo",
+    tarifa_id INT(11) NOT NULL COMMENT "FK - Tarifa aplicada",
+    fecha_ingreso DATETIME NOT NULL COMMENT "Fecha y hora de ingreso",
+    fecha_salida DATETIME NULL COMMENT "Fecha y hora de salida",
+    tiempo_total INT(11) NULL COMMENT "Tiempo total en minutos",
+    monto_total DECIMAL(10,2) NULL COMMENT "Monto total a pagar",
+    estado ENUM('en proceso', 'finalizado') NOT NULL DEFAULT 'en proceso' COMMENT "Estado del registro",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (registro_id),
+    FOREIGN KEY (vehiculo_id) REFERENCES VEHICULOS(vehiculo_id),
+    FOREIGN KEY (usuario_id) REFERENCES USUARIOS(usuario_id),
+    FOREIGN KEY (parqueadero_id) REFERENCES PARQUEADERO(parqueadero_id),
+    FOREIGN KEY (tarifa_id) REFERENCES TARIFAS(tarifa_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.PAGOS (
+    pago_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único del pago",
+    registro_id INT(11) NOT NULL COMMENT "FK - Registro de ingreso asociado",
+    metodo_pago ENUM('efectivo', 'transferencia') NOT NULL COMMENT "Método de pago utilizado",
+    codigo_qr VARCHAR(255) NULL COMMENT "Código QR para pagos por transferencia",
+    estado_pago ENUM('pendiente', 'completado') NOT NULL DEFAULT 'pendiente' COMMENT "Estado del pago",
+    fecha_pago DATETIME NULL COMMENT "Fecha y hora del pago",
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de creación del registro",
+    PRIMARY KEY (pago_id),
+    FOREIGN KEY (registro_id) REFERENCES REGISTRO_INGRESO(registro_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE PARQUEADERO.FACTURAS (
+    factura_id INT(11) NOT NULL AUTO_INCREMENT COMMENT "PK - Identificador único de la factura",
+    pago_id INT(11) NOT NULL COMMENT "FK - Pago asociado",
+    cliente_id INT(11) NOT NULL COMMENT "FK - Cliente asociado",
+    detalle TEXT NOT NULL COMMENT "Detalle de la factura",
+    fecha_emision DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP() COMMENT "Fecha de emisión de la factura",
+    PRIMARY KEY (factura_id),
+    FOREIGN KEY (pago_id) REFERENCES PAGOS(pago_id),
+    FOREIGN KEY (cliente_id) REFERENCES CLIENTES(cliente_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -1,0 +1,7 @@
+pip install fastapi
+pip install passlib
+pip install python-jose
+pip install PyMySQL
+pip install python-multipart
+pip install uvicorn
+pip install bcrypt
