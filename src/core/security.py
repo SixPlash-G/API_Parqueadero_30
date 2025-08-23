@@ -55,8 +55,8 @@ def create_super_user():
     if result['COUNT(*)'] == 0:
         # Crear un superusuario
         hashed_password = hash_password("admin123")  # Cambiar esta contraseña por una segura en producción
-        cursor.execute("INSERT INTO usuarios (email, password, is_superuser) VALUES (%s, %s, %s)", 
-                       ("admin@admin.com", hashed_password, True))  # Se crea el superusuario
+        cursor.execute("INSERT INTO usuarios (nombre, email, celular, password, is_superuser) VALUES (%s, %s, %s, %s, %s)",
+                       ("admin", "admin@admin.com", "1234567890", hashed_password, True))  # Se crea el superusuario
         conn.commit()
         print("Superusuario creado exitosamente.")
     else:
