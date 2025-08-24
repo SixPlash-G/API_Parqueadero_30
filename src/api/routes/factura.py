@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from db.database import get_db_connection
-from models.factura import Factura
-from core.security import get_current_user
+from src.db.database import get_db_connection
+from src.models.factura import Factura
+from src.core.security import get_current_user
 
 router = APIRouter()
 

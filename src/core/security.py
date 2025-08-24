@@ -2,7 +2,7 @@ from passlib.context import CryptContext
 from jose import jwt, JWTError
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
-from db.database import get_db_connection
+from src.db.database import get_db_connection
 
 # Configuración para encriptar contraseñas
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

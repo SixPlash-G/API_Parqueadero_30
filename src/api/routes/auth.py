@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from core.security import verify_password, create_access_token, hash_password
-from db.database import get_db_connection
+from src.core.security import verify_password, create_access_token, hash_password
+from src.db.database import get_db_connection
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from db.database import get_db_connection
-from models.cliente import Cliente
-from core.security import get_current_user  # Protección de rutas
+from src.db.database import get_db_connection
+from src.models.cliente import Cliente
+from src.core.security import get_current_user  # Protección de rutas
 
 router = APIRouter()
 

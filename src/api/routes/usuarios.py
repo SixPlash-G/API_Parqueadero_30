@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from core.security import hash_password, verify_password, get_current_user
-from db.database import get_db_connection
-from models.usuario import Usuario
+from src.core.security import hash_password, verify_password, get_current_user
+from src.db.database import get_db_connection
+from src.models.usuario import Usuario
 
 router = APIRouter()
 

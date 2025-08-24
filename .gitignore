@@ -12,6 +12,10 @@ eggs/
 *.egg-info/
 *.egg
 
+# Virtual environtment
+venv/
+.venv/
+
 # Log files
 *.log
 pip-log.txt

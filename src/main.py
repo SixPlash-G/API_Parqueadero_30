@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from api.routes import auth, usuarios,clientes, vehiculos,parqueaderos, tarifas,registro_ingresos, pago, factura
-from core.security import create_super_user # Importamos la función que crea el superusuario
+from src.api.routes import auth, usuarios,clientes, vehiculos,parqueaderos, tarifas,registro_ingresos, pago, factura
+from src.core.security import create_super_user # Importamos la función que crea el superusuario
 
 app = FastAPI()
 
