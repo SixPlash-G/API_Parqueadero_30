@@ -11,16 +11,14 @@ Api de servicios para aplicación web parqueadero la 30
    - macOS/Linux: `source .venv/bin/activate`
 3. Install dependencies:
    - `pip install -r requirements.txt`
-4. Run the application: 
-   - `python app.py`
-
-## Maintaining
-
-Generate requirements.txt: `pip freeze > requirements.txt`
 
 ## Run Application
 
 Run in terminal `python -m uvicorn run:app`
+
+## Maintaining
+
+Generate requirements.txt: `pip freeze > requirements.txt`
 
 ### Reload Mode
 
