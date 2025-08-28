@@ -33,7 +33,7 @@ To open swagger go to `http://localhost:8000/docs` when the application is runni
 
 ## Run ANPR (Automatic Number Plate Recognition) locally
 
-he project includes a license plate detection script (ANPR) located in the **src/plate_detection** folder..
+The project includes a license plate detection script (ANPR) located in the **src/plate_detection** folder..
 
 1. Make sure the virtual environment is activated.
 2. Run the script:
