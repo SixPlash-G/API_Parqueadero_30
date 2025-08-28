@@ -1,0 +1,31 @@
+# Compiled python files
+*.py[cod]
+*$py.class
+
+# Distribution and packaging
+.Python
+build/
+dist/
+develop-eggs/
+eggs/
+.eggs/
+*.egg-info/
+*.egg
+
+# Virtual environtment
+venv/
+.venv/
+
+# Log files
+*.log
+pip-log.txt
+
+# Editors and IDEs
+.idea/
+.vscode/
+.cache/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+ipython_config.py
+.python-version
