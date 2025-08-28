@@ -1,8 +1,18 @@
 from fastapi import FastAPI
 from src.api.routes import auth, usuarios,clientes, vehiculos,parqueaderos, tarifas,registro_ingresos, pago, factura, anpr
+from fastapi.middleware.cors import CORSMiddleware
 from src.core.security import create_super_user # Importamos la función que crea el superusuario
 
 app = FastAPI()
+
+# Add CORS middleware to allow OPTIONS method
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You can restrict this to specific origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods including OPTIONS
+    allow_headers=["*"]
+)
 
 # Crear el superusuario al iniciar la app, si no hay un superusuario, se cree uno.
 create_super_user()

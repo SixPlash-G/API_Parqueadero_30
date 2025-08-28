@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from src.core.security import verify_password, create_access_token, hash_password
 from src.db.database import get_db_connection
@@ -7,18 +7,28 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    """Autenticación de usuario"""
+async def login(request: Request):
+    """Autenticación de usuario (acepta JSON y form-data)"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM USUARIOS WHERE email = %s", (form_data.username,))
+    content_type = request.headers.get("content-type", "")
+    if "application/json" in content_type:
+        data = await request.json()
+        username = data.get("username")
+        password = data.get("password")
+    else:
+        form = await request.form()
+        username = form.get("username")
+        password = form.get("password")
+
+    cursor.execute("SELECT * FROM USUARIOS WHERE email = %s", (username,))
     user = cursor.fetchone()
 
     cursor.close()
     conn.close()
 
-    if not user or not verify_password(form_data.password, user["password"]):
+    if not user or not verify_password(password, user["password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Credenciales inválidas",
