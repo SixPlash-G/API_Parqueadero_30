@@ -75,6 +75,7 @@ reader = easyocr.Reader(['en'])
 
 # Variable global para almacenar la última placa
 last_plate = None
+camera_service = False
 
 # ---------------------------
 # Funciones principales
@@ -113,12 +114,23 @@ def get_last_plate():
     global last_plate
     return last_plate
 
+def activate_camera():
+    """Activa el servicio de cámara"""
+    global camera_service
+    camera_service = True
+
+def deactivate_camera():
+    """Desactiva el servicio de cámara"""
+    global camera_service
+    camera_service = False
+
 def generate_frames(camera_index=0):
     """Generador de frames para streaming tipo MJPEG (API)"""
     global last_plate
+    global camera_service
     cam = cv2.VideoCapture(camera_index)
 
-    while True:
+    while camera_service:
         ret, frame = cam.read()
         if not ret:
             break
