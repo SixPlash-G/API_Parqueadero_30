@@ -71,7 +71,7 @@ def update_usuario(usuario_id: int, usuario: Usuario, current_user: str = Depend
 
     hashed_password = hash_password(usuario.password)
 
-    sql = """UPDATE USUARIOS SET nombre=%s, email=%s, celular=%s, password=%s is_superuser=%s WHERE usuario_id=%s"""
+    sql = "UPDATE USUARIOS SET nombre=%s, email=%s, celular=%s, password=%s, is_superuser=%s WHERE usuario_id=%s"
     cursor.execute(sql, (usuario.nombre, usuario.email, usuario.celular, hashed_password, usuario.is_superuser, usuario_id))
     conn.commit()
 
