@@ -15,12 +15,12 @@ def create_usuario(usuario: Usuario, current_user: str = Depends(get_current_use
     hashed_password = hash_password(usuario.password)
 
     try:
-        sql = """INSERT INTO USUARIOS (nombre, email, celular, password, is_superuser)
+        sql = """INSERT INTO USERS (name, email, phone, password, is_superuser)
                  VALUES (%s, %s, %s, %s, %s)"""
-        cursor.execute(sql, (usuario.nombre, usuario.email, usuario.celular, hashed_password, usuario.is_superuser))
+        cursor.execute(sql, (usuario.name, usuario.email, usuario.phone, hashed_password, usuario.is_superuser))
         conn.commit()
 
-        usuario.usuario_id = cursor.lastrowid
+        usuario.user_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -36,7 +36,7 @@ def get_usuarios(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT usuario_id, nombre, email, celular, is_superuser FROM USUARIOS")
+    cursor.execute("SELECT user_id, name, email, phone, is_superuser FROM USERS")
     usuarios = cursor.fetchall()
 
     cursor.close()
@@ -45,13 +45,13 @@ def get_usuarios(current_user: str = Depends(get_current_user)):
     return usuarios
 
 # 🔹 Obtener usuario por ID
-@router.get("/{usuario_id}", response_model=Usuario)
-def get_usuario(usuario_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{user_id}", response_model=Usuario)
+def get_usuario(user_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un usuario por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT usuario_id, nombre, email, celular, is_superuser FROM USUARIOS WHERE usuario_id = %s", (usuario_id,))
+    cursor.execute("SELECT user_id, name, email, phone, is_superuser FROM USERS WHERE user_id = %s", (user_id,))
     usuario = cursor.fetchone()
 
     cursor.close()
@@ -63,16 +63,16 @@ def get_usuario(usuario_id: int, current_user: str = Depends(get_current_user)):
     return usuario
 
 # 🔹 Actualizar usuario
-@router.put("/{usuario_id}", response_model=Usuario)
-def update_usuario(usuario_id: int, usuario: Usuario, current_user: str = Depends(get_current_user)):
+@router.put("/{user_id}", response_model=Usuario)
+def update_usuario(user_id: int, usuario: Usuario, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un usuario"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
     hashed_password = hash_password(usuario.password)
 
-    sql = "UPDATE USUARIOS SET nombre=%s, email=%s, celular=%s, password=%s, is_superuser=%s WHERE usuario_id=%s"
-    cursor.execute(sql, (usuario.nombre, usuario.email, usuario.celular, hashed_password, usuario.is_superuser, usuario_id))
+    sql = "UPDATE USERS SET name=%s, email=%s, phone=%s, password=%s, is_superuser=%s WHERE user_id=%s"
+    cursor.execute(sql, (usuario.name, usuario.email, usuario.phone, hashed_password, usuario.is_superuser, user_id))
     conn.commit()
 
     cursor.close()
@@ -81,13 +81,13 @@ def update_usuario(usuario_id: int, usuario: Usuario, current_user: str = Depend
     return usuario
 
 # 🔹 Eliminar usuario
-@router.delete("/{usuario_id}")
-def delete_usuario(usuario_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{user_id}")
+def delete_usuario(user_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un usuario por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM USUARIOS WHERE usuario_id = %s", (usuario_id,))
+    cursor.execute("DELETE FROM USERS WHERE user_id = %s", (user_id,))
     conn.commit()
 
     cursor.close()

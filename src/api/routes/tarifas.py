@@ -13,11 +13,11 @@ def create_tarifa(tarifa: Tarifa, current_user: str = Depends(get_current_user))
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO TARIFAS (tipo, valor_hora) VALUES (%s, %s)"""
-        cursor.execute(sql, (tarifa.tipo.value, tarifa.valor_hora))
+        sql = """INSERT INTO RATES (type, hourly_rate) VALUES (%s, %s)"""
+        cursor.execute(sql, (tarifa.type.value, tarifa.hourly_rate))
         conn.commit()
 
-        tarifa.tarifa_id = cursor.lastrowid
+        tarifa.rate_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -33,7 +33,7 @@ def get_tarifas(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT tarifa_id, tipo, valor_hora, created_at FROM TARIFAS")
+    cursor.execute("SELECT rate_id, type, hourly_rate, created_at FROM RATES")
     tarifas = cursor.fetchall()
 
     cursor.close()
@@ -46,13 +46,13 @@ def get_tarifas(current_user: str = Depends(get_current_user)):
     return tarifas
 
 # 🔹 Obtener Tarifa por ID
-@router.get("/{tarifa_id}", response_model=Tarifa)
-def get_tarifa(tarifa_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{rate_id}", response_model=Tarifa)
+def get_tarifa(rate_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve una tarifa por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT tarifa_id, tipo, valor_hora, created_at FROM TARIFAS WHERE tarifa_id = %s", (tarifa_id,))
+    cursor.execute("SELECT rate_id, type, hourly_rate, created_at FROM RATES WHERE rate_id = %s", (rate_id,))
     tarifa = cursor.fetchone()
 
     cursor.close()
@@ -67,14 +67,14 @@ def get_tarifa(tarifa_id: int, current_user: str = Depends(get_current_user)):
     return tarifa
 
 # 🔹 Actualizar Tarifa
-@router.put("/{tarifa_id}", response_model=Tarifa)
-def update_tarifa(tarifa_id: int, tarifa: Tarifa, current_user: str = Depends(get_current_user)):
+@router.put("/{rate_id}", response_model=Tarifa)
+def update_tarifa(rate_id: int, tarifa: Tarifa, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de una tarifa"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE TARIFAS SET tipo=%s, valor_hora=%s WHERE tarifa_id=%s"""
-    cursor.execute(sql, (tarifa.tipo.value, tarifa.valor_hora, tarifa_id))
+    sql = """UPDATE RATES SET type=%s, hourly_rate=%s WHERE rate_id=%s"""
+    cursor.execute(sql, (tarifa.type.value, tarifa.hourly_rate, rate_id))
     conn.commit()
 
     cursor.close()
@@ -83,13 +83,13 @@ def update_tarifa(tarifa_id: int, tarifa: Tarifa, current_user: str = Depends(ge
     return tarifa
 
 # 🔹 Eliminar Tarifa
-@router.delete("/{tarifa_id}")
-def delete_tarifa(tarifa_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{rate_id}")
+def delete_tarifa(rate_id: int, current_user: str = Depends(get_current_user)):
     """Elimina una tarifa por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM TARIFAS WHERE tarifa_id = %s", (tarifa_id,))
+    cursor.execute("DELETE FROM RATES WHERE rate_id = %s", (rate_id,))
     conn.commit()
 
     cursor.close()

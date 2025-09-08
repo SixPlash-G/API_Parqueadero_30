@@ -13,11 +13,11 @@ def create_cliente(cliente: Cliente, current_user: str = Depends(get_current_use
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO CLIENTES (nombre, email, celular) VALUES (%s, %s, %s)"""
-        cursor.execute(sql, (cliente.nombre, cliente.email, cliente.celular))
+        sql = """INSERT INTO CLIENTS (name, email, phone) VALUES (%s, %s, %s)"""
+        cursor.execute(sql, (cliente.name, cliente.email, cliente.phone))
         conn.commit()
 
-        cliente.cliente_id = cursor.lastrowid
+        cliente.client_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -33,7 +33,7 @@ def get_clientes(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT cliente_id, nombre, email, celular, created_at FROM CLIENTES")
+    cursor.execute("SELECT client_id, name, email, phone, created_at FROM CLIENTS")
     clientes = cursor.fetchall()
 
     cursor.close()
@@ -46,13 +46,13 @@ def get_clientes(current_user: str = Depends(get_current_user)):
     return clientes
 
 # 🔹 Obtener Cliente por ID
-@router.get("/{cliente_id}", response_model=Cliente)
-def get_cliente(cliente_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{client_id}", response_model=Cliente)
+def get_cliente(client_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un cliente por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT cliente_id, nombre, email, celular, created_at FROM CLIENTES WHERE cliente_id = %s", (cliente_id,))
+    cursor.execute("SELECT client_id, name, email, phone, created_at FROM CLIENTS WHERE client_id = %s", (client_id,))
     cliente = cursor.fetchone()
 
     cursor.close()
@@ -67,14 +67,14 @@ def get_cliente(cliente_id: int, current_user: str = Depends(get_current_user)):
     return cliente
 
 # 🔹 Actualizar Cliente
-@router.put("/{cliente_id}", response_model=Cliente)
-def update_cliente(cliente_id: int, cliente: Cliente, current_user: str = Depends(get_current_user)):
+@router.put("/{client_id}", response_model=Cliente)
+def update_cliente(client_id: int, cliente: Cliente, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un cliente"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE CLIENTES SET nombre=%s, email=%s, celular=%s WHERE cliente_id=%s"""
-    cursor.execute(sql, (cliente.nombre, cliente.email, cliente.celular, cliente_id))
+    sql = """UPDATE CLIENTS SET name=%s, email=%s, phone=%s WHERE client_id=%s"""
+    cursor.execute(sql, (cliente.name, cliente.email, cliente.phone, client_id))
     conn.commit()
 
     cursor.close()
@@ -83,13 +83,13 @@ def update_cliente(cliente_id: int, cliente: Cliente, current_user: str = Depend
     return cliente
 
 # 🔹 Eliminar Cliente
-@router.delete("/{cliente_id}")
-def delete_cliente(cliente_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{client_id}")
+def delete_cliente(client_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un cliente por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM CLIENTES WHERE cliente_id = %s", (cliente_id,))
+    cursor.execute("DELETE FROM CLIENTS WHERE client_id = %s", (client_id,))
     conn.commit()
 
     cursor.close()

@@ -42,20 +42,19 @@ def create_super_user():
     cursor = conn.cursor()
 
     # Verificar si ya existe un superusuario
-    cursor.execute("SELECT COUNT(*) FROM usuarios WHERE is_superuser = TRUE")
+    cursor.execute("SELECT COUNT(*) as count FROM USERS WHERE is_superuser = TRUE")
     result = cursor.fetchone()
 
-     # Verificar que result no sea None y que tenga el índice 0
     if result is None:
         print("Error: No se pudo obtener el resultado de la consulta.")
         return
     
     print(result)
-    # Si no se encuentra ningún superusuario, result será (0,)
-    if result['COUNT(*)'] == 0:
+    # Si no se encuentra ningún superusuario, result será {'count': 0}
+    if result['count'] == 0:
         # Crear un superusuario
         hashed_password = hash_password("admin123")  # Cambiar esta contraseña por una segura en producción
-        cursor.execute("INSERT INTO usuarios (nombre, email, celular, password, is_superuser) VALUES (%s, %s, %s, %s, %s)",
+        cursor.execute("INSERT INTO USERS (name, email, phone, password, is_superuser) VALUES (%s, %s, %s, %s, %s)",
                        ("admin", "admin@admin.com", "1234567890", hashed_password, True))  # Se crea el superusuario
         conn.commit()
         print("Superusuario creado exitosamente.")

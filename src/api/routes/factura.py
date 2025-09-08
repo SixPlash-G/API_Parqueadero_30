@@ -13,12 +13,12 @@ def create_factura(factura: Factura, current_user: str = Depends(get_current_use
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO FACTURAS (pago_id, cliente_id, detalle)
+        sql = """INSERT INTO INVOICES (payment_id, client_id, details)
                  VALUES (%s, %s, %s)"""
-        cursor.execute(sql, (factura.pago_id, factura.cliente_id, factura.detalle))
+        cursor.execute(sql, (factura.payment_id, factura.client_id, factura.details))
         conn.commit()
 
-        factura.factura_id = cursor.lastrowid
+        factura.invoice_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -34,7 +34,7 @@ def get_facturas(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT factura_id, pago_id, cliente_id, detalle, fecha_emision FROM FACTURAS")
+    cursor.execute("SELECT invoice_id, payment_id, client_id, details, issue_date FROM INVOICES")
     facturas = cursor.fetchall()
 
     cursor.close()
@@ -43,13 +43,13 @@ def get_facturas(current_user: str = Depends(get_current_user)):
     return facturas
 
 # 🔹 Obtener una factura por ID
-@router.get("/{factura_id}", response_model=Factura)
-def get_factura(factura_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{invoice_id}", response_model=Factura)
+def get_factura(invoice_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve una factura específica"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT factura_id, pago_id, cliente_id, detalle, fecha_emision FROM FACTURAS WHERE factura_id = %s", (factura_id,))
+    cursor.execute("SELECT invoice_id, payment_id, client_id, details, issue_date FROM INVOICES WHERE invoice_id = %s", (invoice_id,))
     factura = cursor.fetchone()
 
     cursor.close()
@@ -61,14 +61,14 @@ def get_factura(factura_id: int, current_user: str = Depends(get_current_user)):
     return factura
 
 # 🔹 Actualizar factura
-@router.put("/{factura_id}", response_model=Factura)
-def update_factura(factura_id: int, factura: Factura, current_user: str = Depends(get_current_user)):
+@router.put("/{invoice_id}", response_model=Factura)
+def update_factura(invoice_id: int, factura: Factura, current_user: str = Depends(get_current_user)):
     """Actualiza una factura"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE FACTURAS SET pago_id=%s, cliente_id=%s, detalle=%s WHERE factura_id=%s"""
-    cursor.execute(sql, (factura.pago_id, factura.cliente_id, factura.detalle, factura_id))
+    sql = """UPDATE INVOICES SET payment_id=%s, client_id=%s, details=%s WHERE invoice_id=%s"""
+    cursor.execute(sql, (factura.payment_id, factura.client_id, factura.details, invoice_id))
     conn.commit()
 
     cursor.close()
@@ -77,13 +77,13 @@ def update_factura(factura_id: int, factura: Factura, current_user: str = Depend
     return factura
 
 # 🔹 Eliminar factura
-@router.delete("/{factura_id}")
-def delete_factura(factura_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{invoice_id}")
+def delete_factura(invoice_id: int, current_user: str = Depends(get_current_user)):
     """Elimina una factura por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM FACTURAS WHERE factura_id = %s", (factura_id,))
+    cursor.execute("DELETE FROM INVOICES WHERE invoice_id = %s", (invoice_id,))
     conn.commit()
 
     cursor.close()

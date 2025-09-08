@@ -3,11 +3,11 @@ from typing import Optional
 from enum import Enum
 
 class TipoTarifa(str, Enum):
-    ordinaria = "ordinaria"
-    especial = "especial"
+    regular = "regular"
+    special = "special"
 
 class Tarifa(BaseModel):
-    tarifa_id: Optional[int] = None  # Opcional en la creación
-    tipo: TipoTarifa  # ENUM ('ordinaria', 'especial')
-    valor_hora: float  # Eliminamos condecimal
-    created_at: Optional[str] = None  # Se asigna automáticamente en la BD
+    rate_id: Optional[int] = None  # Opcional en la creación
+    type: TipoTarifa  # ENUM ('regular', 'special')
+    hourly_rate: float
+    created_at: Optional[str] = None  # Se asigna automáticamente

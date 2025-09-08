@@ -13,12 +13,12 @@ def create_pago(pago: Pago, current_user: str = Depends(get_current_user)):
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO PAGOS (registro_id, metodo_pago, codigo_qr, estado_pago, fecha_pago)
+        sql = """INSERT INTO PAYMENTS (entry_id, payment_method, qr_code, payment_status, payment_date)
                  VALUES (%s, %s, %s, %s, %s)"""
-        cursor.execute(sql, (pago.registro_id, pago.metodo_pago, pago.codigo_qr, pago.estado_pago, pago.fecha_pago))
+        cursor.execute(sql, (pago.entry_id, pago.payment_method, pago.qr_code, pago.payment_status, pago.payment_date))
         conn.commit()
 
-        pago.pago_id = cursor.lastrowid
+        pago.payment_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -34,7 +34,7 @@ def get_pagos(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT pago_id, registro_id, metodo_pago, codigo_qr, estado_pago, fecha_pago, created_at FROM PAGOS")
+    cursor.execute("SELECT payment_id, entry_id, payment_method, qr_code, payment_status, payment_date, created_at FROM PAYMENTS")
     pagos = cursor.fetchall()
 
     cursor.close()
@@ -43,13 +43,13 @@ def get_pagos(current_user: str = Depends(get_current_user)):
     return pagos
 
 # 🔹 Obtener un pago por ID
-@router.get("/{pago_id}", response_model=Pago)
-def get_pago(pago_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{payment_id}", response_model=Pago)
+def get_pago(payment_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un pago por su ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT pago_id, registro_id, metodo_pago, codigo_qr, estado_pago, fecha_pago, created_at FROM PAGOS WHERE pago_id = %s", (pago_id,))
+    cursor.execute("SELECT payment_id, entry_id, payment_method, qr_code, payment_status, payment_date, created_at FROM PAYMENTS WHERE payment_id = %s", (payment_id,))
     pago = cursor.fetchone()
 
     cursor.close()
@@ -61,14 +61,14 @@ def get_pago(pago_id: int, current_user: str = Depends(get_current_user)):
     return pago
 
 # 🔹 Actualizar estado del pago
-@router.put("/{pago_id}", response_model=Pago)
-def update_pago(pago_id: int, pago: Pago, current_user: str = Depends(get_current_user)):
+@router.put("/{payment_id}", response_model=Pago)
+def update_pago(payment_id: int, pago: Pago, current_user: str = Depends(get_current_user)):
     """Actualiza el estado del pago"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE PAGOS SET metodo_pago=%s, codigo_qr=%s, estado_pago=%s, fecha_pago=%s WHERE pago_id=%s"""
-    cursor.execute(sql, (pago.metodo_pago, pago.codigo_qr, pago.estado_pago, pago.fecha_pago, pago_id))
+    sql = """UPDATE PAYMENTS SET payment_method=%s, qr_code=%s, payment_status=%s, payment_date=%s WHERE payment_id=%s"""
+    cursor.execute(sql, (pago.payment_method, pago.qr_code, pago.payment_status, pago.payment_date, payment_id))
     conn.commit()
 
     cursor.close()
@@ -77,13 +77,13 @@ def update_pago(pago_id: int, pago: Pago, current_user: str = Depends(get_curren
     return pago
 
 # 🔹 Eliminar un pago
-@router.delete("/{pago_id}")
-def delete_pago(pago_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{payment_id}")
+def delete_pago(payment_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un pago por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM PAGOS WHERE pago_id = %s", (pago_id,))
+    cursor.execute("DELETE FROM PAYMENTS WHERE payment_id = %s", (payment_id,))
     conn.commit()
 
     cursor.close()

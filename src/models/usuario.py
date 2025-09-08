@@ -1,10 +1,11 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class Usuario(BaseModel):
-    usuario_id: int | None = None  # Opcional en la creación
-    nombre: str
+    user_id: Optional[int] = None  # Opcional en la creación
+    name: str
     email: str
-    celular: str
-    password: str | None = None  # Se asigna automáticamente en la BD
+    phone: str
+    password: Optional[str] = None  # Se asigna automáticamente en la BD
     is_superuser: bool = False  # Valor por defecto a False 
-    created_at: str | None = None  # Se asigna automáticamente en la BD
+    created_at: Optional[str] = None  # Se asigna automáticamente en la BD

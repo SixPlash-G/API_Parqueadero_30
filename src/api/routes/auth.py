@@ -8,7 +8,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 @router.post("/login")
 async def login(request: Request):
-    """Autenticación de usuario (acepta JSON y form-data)"""
+    """User authentication (accepts JSON and form-data)"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -22,7 +22,7 @@ async def login(request: Request):
         username = form.get("username")
         password = form.get("password")
 
-    cursor.execute("SELECT * FROM USUARIOS WHERE email = %s", (username,))
+    cursor.execute("SELECT * FROM USERS WHERE email = %s", (username,))
     user = cursor.fetchone()
 
     cursor.close()
@@ -31,7 +31,7 @@ async def login(request: Request):
     if not user or not verify_password(password, user["password"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Credenciales inválidas",
+            detail="Invalid credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
@@ -40,33 +40,33 @@ async def login(request: Request):
 
 @router.post("/create_user")
 def create_user(email: str, password: str, token: str = Depends(oauth2_scheme)):
-    """Crea un nuevo usuario solo si es superusuario"""
+    """Create a new user only if superuser"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM usuarios WHERE email = %s", (email,))
+    cursor.execute("SELECT * FROM USERS WHERE email = %s", (email,))
     existing_user = cursor.fetchone()
 
     if existing_user:
         cursor.close()
         conn.close()
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="El usuario ya existe")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
 
-    # Verificar que el que crea el usuario es un superusuario
-    cursor.execute("SELECT is_superuser FROM usuarios WHERE email = %s", (token,))
+    # Verify that the creator is a superuser
+    cursor.execute("SELECT is_superuser FROM USERS WHERE email = %s", (token,))
     user = cursor.fetchone()
 
     if not user or not user["is_superuser"]:
         cursor.close()
         conn.close()
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes permisos para crear usuarios")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You do not have permission to create users")
 
     hashed_password = hash_password(password)
-    cursor.execute("INSERT INTO usuarios (email, password, is_superuser) VALUES (%s, %s, %s)",
-                   (email, hashed_password, False))  # Aquí estamos creando un usuario regular, no un superusuario
+    cursor.execute("INSERT INTO USERS (email, password, is_superuser) VALUES (%s, %s, %s)",
+                   (email, hashed_password, False))  # Creating a regular user, not a superuser
     conn.commit()
 
     cursor.close()
     conn.close()
 
-    return {"message": "Usuario creado exitosamente"}
+    return {"message": "User created successfully"}

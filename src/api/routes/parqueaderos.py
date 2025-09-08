@@ -13,11 +13,11 @@ def create_parqueadero(parqueadero: Parqueadero, current_user: str = Depends(get
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO PARQUEADERO (total_espacios, espacios_disponibles) VALUES (%s, %s)"""
-        cursor.execute(sql, (parqueadero.total_espacios, parqueadero.espacios_disponibles))
+        sql = """INSERT INTO PARKINGS (total_spaces, available_spaces) VALUES (%s, %s)"""
+        cursor.execute(sql, (parqueadero.total_spaces, parqueadero.available_spaces))
         conn.commit()
 
-        parqueadero.parqueadero_id = cursor.lastrowid
+        parqueadero.parking_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -33,7 +33,7 @@ def get_parqueaderos(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT parqueadero_id, total_espacios, espacios_disponibles, created_at FROM PARQUEADERO")
+    cursor.execute("SELECT parking_id, total_spaces, available_spaces, created_at FROM PARKINGS")
     parqueaderos = cursor.fetchall()
 
     cursor.close()
@@ -46,13 +46,13 @@ def get_parqueaderos(current_user: str = Depends(get_current_user)):
     return parqueaderos
 
 # 🔹 Obtener Parqueadero por ID
-@router.get("/{parqueadero_id}", response_model=Parqueadero)
-def get_parqueadero(parqueadero_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{parking_id}", response_model=Parqueadero)
+def get_parqueadero(parking_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT parqueadero_id, total_espacios, espacios_disponibles, created_at FROM PARQUEADERO WHERE parqueadero_id = %s", (parqueadero_id,))
+    cursor.execute("SELECT parking_id, total_spaces, available_spaces, created_at FROM PARKINGS WHERE parking_id = %s", (parking_id,))
     parqueadero = cursor.fetchone()
 
     cursor.close()
@@ -67,14 +67,14 @@ def get_parqueadero(parqueadero_id: int, current_user: str = Depends(get_current
     return parqueadero
 
 # 🔹 Actualizar Parqueadero
-@router.put("/{parqueadero_id}", response_model=Parqueadero)
-def update_parqueadero(parqueadero_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
+@router.put("/{parking_id}", response_model=Parqueadero)
+def update_parqueadero(parking_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un parqueadero"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE PARQUEADERO SET total_espacios=%s, espacios_disponibles=%s WHERE parqueadero_id=%s"""
-    cursor.execute(sql, (parqueadero.total_espacios, parqueadero.espacios_disponibles, parqueadero_id))
+    sql = """UPDATE PARKINGS SET total_spaces=%s, available_spaces=%s WHERE parking_id=%s"""
+    cursor.execute(sql, (parqueadero.total_spaces, parqueadero.available_spaces, parking_id))
     conn.commit()
 
     cursor.close()
@@ -83,13 +83,13 @@ def update_parqueadero(parqueadero_id: int, parqueadero: Parqueadero, current_us
     return parqueadero
 
 # 🔹 Eliminar Parqueadero
-@router.delete("/{parqueadero_id}")
-def delete_parqueadero(parqueadero_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{parking_id}")
+def delete_parqueadero(parking_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM PARQUEADERO WHERE parqueadero_id = %s", (parqueadero_id,))
+    cursor.execute("DELETE FROM PARKINGS WHERE parking_id = %s", (parking_id,))
     conn.commit()
 
     cursor.close()

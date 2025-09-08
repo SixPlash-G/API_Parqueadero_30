@@ -13,13 +13,13 @@ def create_registro(registro: RegistroIngreso, current_user: str = Depends(get_c
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO REGISTRO_INGRESO 
-                 (vehiculo_id, usuario_id, tarifa_id, fecha_ingreso, estado)
+        sql = """INSERT INTO ENTRIES 
+                 (vehicle_id, user_id, rate_id, entry_date, status)
                  VALUES (%s, %s, %s, %s, %s)"""
-        cursor.execute(sql, (registro.vehiculo_id, registro.usuario_id, registro.tarifa_id, registro.fecha_ingreso, registro.estado.value))
+        cursor.execute(sql, (registro.vehicle_id, registro.user_id, registro.rate_id, registro.entry_date, registro.status.value))
         conn.commit()
 
-        registro.registro_id = cursor.lastrowid
+        registro.entry_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -35,7 +35,7 @@ def get_registros(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM REGISTRO_INGRESO")
+    cursor.execute("SELECT * FROM ENTRIES")
     registros = cursor.fetchall()
 
     cursor.close()
@@ -43,20 +43,20 @@ def get_registros(current_user: str = Depends(get_current_user)):
 
     # 🔹 Convertimos fechas a string para evitar errores
     for registro in registros:
-        registro["fecha_ingreso"] = registro["fecha_ingreso"].strftime("%Y-%m-%d %H:%M:%S")
-        if registro["fecha_salida"]:
-            registro["fecha_salida"] = registro["fecha_salida"].strftime("%Y-%m-%d %H:%M:%S")
+        registro["entry_date"] = registro["entry_date"].strftime("%Y-%m-%d %H:%M:%S")
+        if registro.get("exit_date"):
+            registro["exit_date"] = registro["exit_date"].strftime("%Y-%m-%d %H:%M:%S")
 
     return registros
 
 # 🔹 Obtener Registro por ID
-@router.get("/{registro_id}", response_model=RegistroIngreso)
-def get_registro(registro_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{entry_id}", response_model=RegistroIngreso)
+def get_registro(entry_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM REGISTRO_INGRESO WHERE registro_id = %s", (registro_id,))
+    cursor.execute("SELECT * FROM ENTRIES WHERE entry_id = %s", (entry_id,))
     registro = cursor.fetchone()
 
     cursor.close()
@@ -66,26 +66,26 @@ def get_registro(registro_id: int, current_user: str = Depends(get_current_user)
         raise HTTPException(status_code=404, detail="Registro no encontrado")
 
     # 🔹 Convertimos fechas a string
-    registro["fecha_ingreso"] = registro["fecha_ingreso"].strftime("%Y-%m-%d %H:%M:%S")
-    if registro["fecha_salida"]:
-        registro["fecha_salida"] = registro["fecha_salida"].strftime("%Y-%m-%d %H:%M:%S")
+    registro["entry_date"] = registro["entry_date"].strftime("%Y-%m-%d %H:%M:%S")
+    if registro.get("exit_date"):
+        registro["exit_date"] = registro["exit_date"].strftime("%Y-%m-%d %H:%M:%S")
 
     return registro
 
 # 🔹 Actualizar Registro de Ingreso
-@router.put("/{registro_id}", response_model=RegistroIngreso)
-def update_registro(registro_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
+@router.put("/{entry_id}", response_model=RegistroIngreso)
+def update_registro(entry_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un registro de ingreso"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE REGISTRO_INGRESO 
-             SET vehiculo_id=%s, usuario_id=%s, tarifa_id=%s, fecha_ingreso=%s, fecha_salida=%s, 
-                 tiempo_total=%s, monto_total=%s, estado=%s
-             WHERE registro_id=%s"""
+    sql = """UPDATE ENTRIES 
+             SET vehicle_id=%s, user_id=%s, rate_id=%s, entry_date=%s, exit_date=%s, 
+                 total_time=%s, total_amount=%s, status=%s
+             WHERE entry_id=%s"""
     cursor.execute(sql, (
-        registro.vehiculo_id, registro.usuario_id, registro.tarifa_id, registro.fecha_ingreso, 
-        registro.fecha_salida, registro.tiempo_total, registro.monto_total, registro.estado.value, registro_id
+        registro.vehicle_id, registro.user_id, registro.rate_id, registro.entry_date, 
+        registro.exit_date, registro.total_time, registro.total_amount, registro.status.value, entry_id
     ))
     conn.commit()
 
@@ -95,56 +95,58 @@ def update_registro(registro_id: int, registro: RegistroIngreso, current_user: s
     return registro
 
 # 🔹 Finalizar Registro de Ingreso
-@router.put("/{registro_id}/finalizar")
-def finalizar_registro(registro_id: int, current_user: str = Depends(get_current_user)):
+@router.put("/{entry_id}/finalizar")
+def finalizar_registro(entry_id: int, current_user: str = Depends(get_current_user)):
     """Marca un registro de ingreso como finalizado, calcula tiempo y monto total"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM REGISTRO_INGRESO WHERE registro_id = %s", (registro_id,))
+    cursor.execute("SELECT * FROM ENTRIES WHERE entry_id = %s", (entry_id,))
     registro = cursor.fetchone()
 
     if not registro:
         raise HTTPException(status_code=404, detail="Registro no encontrado")
 
-    if registro["estado"] == "finalizado":
+    if registro["status"] == "finished":
         raise HTTPException(status_code=400, detail="El registro ya está finalizado")
 
     # 🔹 Calcular tiempo total en minutos y monto total
     from datetime import datetime
-    fecha_salida = datetime.now()
-    fecha_ingreso = registro["fecha_ingreso"]
-    tiempo_total = int((fecha_salida - fecha_ingreso).total_seconds() / 60)
+    exit_date = datetime.now()
+    entry_date = registro["entry_date"]
+    if isinstance(entry_date, str):
+        entry_date = datetime.strptime(entry_date, "%Y-%m-%d %H:%M:%S")
+    total_time = int((exit_date - entry_date).total_seconds() / 60)
 
     # 🔹 Obtener el valor de la tarifa
-    cursor.execute("SELECT valor_hora FROM TARIFAS WHERE tarifa_id = %s", (registro["tarifa_id"],))
-    tarifa = cursor.fetchone()
+    cursor.execute("SELECT hourly_rate FROM RATES WHERE rate_id = %s", (registro["rate_id"],))
+    rate = cursor.fetchone()
 
-    if not tarifa:
+    if not rate:
         raise HTTPException(status_code=404, detail="Tarifa no encontrada")
 
-    monto_total = (tiempo_total / 60) * tarifa["valor_hora"]
+    total_amount = (total_time / 60) * float(rate["hourly_rate"])
 
     # 🔹 Actualizar el registro
-    sql = """UPDATE REGISTRO_INGRESO 
-             SET fecha_salida=%s, tiempo_total=%s, monto_total=%s, estado=%s 
-             WHERE registro_id=%s"""
-    cursor.execute(sql, (fecha_salida, tiempo_total, monto_total, "finalizado", registro_id))
+    sql = """UPDATE ENTRIES 
+             SET exit_date=%s, total_time=%s, total_amount=%s, status=%s 
+             WHERE entry_id=%s"""
+    cursor.execute(sql, (exit_date, total_time, total_amount, "finished", entry_id))
     conn.commit()
 
     cursor.close()
     conn.close()
 
-    return {"message": "Registro finalizado", "tiempo_total": tiempo_total, "monto_total": monto_total}
+    return {"message": "Registro finalizado", "total_time": total_time, "total_amount": total_amount}
 
 # 🔹 Eliminar Registro de Ingreso
-@router.delete("/{registro_id}")
-def delete_registro(registro_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{entry_id}")
+def delete_registro(entry_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM REGISTRO_INGRESO WHERE registro_id = %s", (registro_id,))
+    cursor.execute("DELETE FROM ENTRIES WHERE entry_id = %s", (entry_id,))
     conn.commit()
 
     cursor.close()

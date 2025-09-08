@@ -13,11 +13,11 @@ def create_vehiculo(vehiculo: Vehiculo, current_user: str = Depends(get_current_
     cursor = conn.cursor()
 
     try:
-        sql = """INSERT INTO VEHICULOS (cliente_id, placa, marca, modelo) VALUES (%s, %s, %s, %s)"""
-        cursor.execute(sql, (vehiculo.cliente_id, vehiculo.placa, vehiculo.marca, vehiculo.modelo))
+        sql = """INSERT INTO VEHICLES (client_id, plate, brand, model) VALUES (%s, %s, %s, %s)"""
+        cursor.execute(sql, (vehiculo.client_id, vehiculo.plate, vehiculo.brand, vehiculo.model))
         conn.commit()
 
-        vehiculo.vehiculo_id = cursor.lastrowid
+        vehiculo.vehicle_id = cursor.lastrowid
         cursor.close()
         conn.close()
 
@@ -33,7 +33,7 @@ def get_vehiculos(current_user: str = Depends(get_current_user)):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT vehiculo_id, cliente_id, placa, marca, modelo, created_at FROM VEHICULOS")
+    cursor.execute("SELECT vehicle_id, client_id, plate, brand, model, created_at FROM VEHICLES")
     vehiculos = cursor.fetchall()
 
     cursor.close()
@@ -46,13 +46,13 @@ def get_vehiculos(current_user: str = Depends(get_current_user)):
     return vehiculos
 
 # 🔹 Obtener Vehículo por ID
-@router.get("/{vehiculo_id}", response_model=Vehiculo)
-def get_vehiculo(vehiculo_id: int, current_user: str = Depends(get_current_user)):
+@router.get("/{vehicle_id}", response_model=Vehiculo)
+def get_vehiculo(vehicle_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un vehículo por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT vehiculo_id, cliente_id, placa, marca, modelo, created_at FROM VEHICULOS WHERE vehiculo_id = %s", (vehiculo_id,))
+    cursor.execute("SELECT vehicle_id, client_id, plate, brand, model, created_at FROM VEHICLES WHERE vehicle_id = %s", (vehicle_id,))
     vehiculo = cursor.fetchone()
 
     cursor.close()
@@ -67,14 +67,14 @@ def get_vehiculo(vehiculo_id: int, current_user: str = Depends(get_current_user)
     return vehiculo
 
 # 🔹 Actualizar Vehículo
-@router.put("/{vehiculo_id}", response_model=Vehiculo)
-def update_vehiculo(vehiculo_id: int, vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
+@router.put("/{vehicle_id}", response_model=Vehiculo)
+def update_vehiculo(vehicle_id: int, vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un vehículo"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    sql = """UPDATE VEHICULOS SET cliente_id=%s, placa=%s, marca=%s, modelo=%s WHERE vehiculo_id=%s"""
-    cursor.execute(sql, (vehiculo.cliente_id, vehiculo.placa, vehiculo.marca, vehiculo.modelo, vehiculo_id))
+    sql = """UPDATE VEHICLES SET client_id=%s, plate=%s, brand=%s, model=%s WHERE vehicle_id=%s"""
+    cursor.execute(sql, (vehiculo.client_id, vehiculo.plate, vehiculo.brand, vehiculo.model, vehicle_id))
     conn.commit()
 
     cursor.close()
@@ -83,13 +83,13 @@ def update_vehiculo(vehiculo_id: int, vehiculo: Vehiculo, current_user: str = De
     return vehiculo
 
 # 🔹 Eliminar Vehículo
-@router.delete("/{vehiculo_id}")
-def delete_vehiculo(vehiculo_id: int, current_user: str = Depends(get_current_user)):
+@router.delete("/{vehicle_id}")
+def delete_vehiculo(vehicle_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un vehículo por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM VEHICULOS WHERE vehiculo_id = %s", (vehiculo_id,))
+    cursor.execute("DELETE FROM VEHICLES WHERE vehicle_id = %s", (vehicle_id,))
     conn.commit()
 
     cursor.close()
