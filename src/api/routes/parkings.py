@@ -7,7 +7,7 @@ router = APIRouter()
 
 # 🔹 Crear Parqueadero
 @router.post("/", response_model=Parqueadero)
-def create_parqueadero(parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
+def create_parkings(parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
     """Registra un nuevo parqueadero"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -28,7 +28,7 @@ def create_parqueadero(parqueadero: Parqueadero, current_user: str = Depends(get
 
 # 🔹 Obtener todos los Parqueaderos
 @router.get("/", response_model=list[Parqueadero])
-def get_parqueaderos(current_user: str = Depends(get_current_user)):
+def get_parkings(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todos los parqueaderos"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -47,7 +47,7 @@ def get_parqueaderos(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Parqueadero por ID
 @router.get("/{parking_id}", response_model=Parqueadero)
-def get_parqueadero(parking_id: int, current_user: str = Depends(get_current_user)):
+def get_parkings(parking_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -68,7 +68,7 @@ def get_parqueadero(parking_id: int, current_user: str = Depends(get_current_use
 
 # 🔹 Actualizar Parqueadero
 @router.put("/{parking_id}", response_model=Parqueadero)
-def update_parqueadero(parking_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
+def update_parkings(parking_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un parqueadero"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -84,7 +84,7 @@ def update_parqueadero(parking_id: int, parqueadero: Parqueadero, current_user: 
 
 # 🔹 Eliminar Parqueadero
 @router.delete("/{parking_id}")
-def delete_parqueadero(parking_id: int, current_user: str = Depends(get_current_user)):
+def delete_parkings(parking_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

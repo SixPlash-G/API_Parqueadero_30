@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api.routes import auth, usuarios,clientes, vehiculos,parqueaderos, tarifas,registro_ingresos, pago, factura, anpr
+from src.api.routes import auth, anpr, clients, entries, invoices, parkings, payments, rates, users, vehicles
 from fastapi.middleware.cors import CORSMiddleware
 from src.core.security import create_super_user # Importamos la función que crea el superusuario
 
@@ -19,14 +19,14 @@ create_super_user()
 
 app.include_router(anpr.router, prefix="/anpr", tags=["Plate Detection"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
-app.include_router(usuarios.router, prefix="/usuarios", tags=["Users"])
-app.include_router(clientes.router, prefix="/clientes", tags=["Clients"])
-app.include_router(vehiculos.router, prefix="/vehiculos", tags=["Vehicles"])
-app.include_router(parqueaderos.router, prefix="/parqueaderos", tags=["Parkings"])
-app.include_router(tarifas.router, prefix="/tarifas", tags=["Rates"])
-app.include_router(registro_ingresos.router, prefix="/registros_ingreso", tags=["Entries"])
-app.include_router(pago.router, prefix="/pagos", tags=["Payments"])
-app.include_router(factura.router, prefix="/facturas", tags=["Invoices"])
+app.include_router(users.router, prefix="/users", tags=["Users"])
+app.include_router(clients.router, prefix="/clients", tags=["Clients"])
+app.include_router(vehicles.router, prefix="/vehicles", tags=["Vehicles"])
+app.include_router(parkings.router, prefix="/parkings", tags=["Parkings"])
+app.include_router(rates.router, prefix="/rates", tags=["Rates"])
+app.include_router(entries.router, prefix="/entries", tags=["Entries"])
+app.include_router(payments.router, prefix="/payments", tags=["Payments"])
+app.include_router(invoices.router, prefix="/invoices", tags=["Invoices"])
 
 @app.get("/")
 def home():

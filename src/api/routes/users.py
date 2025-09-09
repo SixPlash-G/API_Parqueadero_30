@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from src.core.security import hash_password, verify_password, get_current_user
 from src.db.database import get_db_connection
-from src.models.usuario import Usuario
+from src.models.user import Usuario
 
 router = APIRouter()
 
 # 🔹 Crear usuario (Registro)
 @router.post("/", response_model=Usuario)
-def create_usuario(usuario: Usuario, current_user: str = Depends(get_current_user)):  # 🔒 Validación agregada
+def create_users(usuario: Usuario, current_user: str = Depends(get_current_user)):  # 🔒 Validación agregada
     """Registra un nuevo usuario con contraseña encriptada"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -31,7 +31,7 @@ def create_usuario(usuario: Usuario, current_user: str = Depends(get_current_use
 
 # 🔹 Obtener todos los usuarios
 @router.get("/", response_model=list[Usuario])
-def get_usuarios(current_user: str = Depends(get_current_user)):
+def get_users(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todos los usuarios"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -46,7 +46,7 @@ def get_usuarios(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener usuario por ID
 @router.get("/{user_id}", response_model=Usuario)
-def get_usuario(user_id: int, current_user: str = Depends(get_current_user)):
+def get_users(user_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un usuario por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -64,7 +64,7 @@ def get_usuario(user_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar usuario
 @router.put("/{user_id}", response_model=Usuario)
-def update_usuario(user_id: int, usuario: Usuario, current_user: str = Depends(get_current_user)):
+def update_users(user_id: int, usuario: Usuario, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un usuario"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -82,7 +82,7 @@ def update_usuario(user_id: int, usuario: Usuario, current_user: str = Depends(g
 
 # 🔹 Eliminar usuario
 @router.delete("/{user_id}")
-def delete_usuario(user_id: int, current_user: str = Depends(get_current_user)):
+def delete_users(user_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un usuario por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

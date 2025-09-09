@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.db.database import get_db_connection
-from src.models.factura import Factura
+from src.models.invoice import Factura
 from src.core.security import get_current_user
 
 router = APIRouter()
 
 # 🔹 Crear factura
 @router.post("/", response_model=Factura)
-def create_factura(factura: Factura, current_user: str = Depends(get_current_user)):
+def create_invoices(factura: Factura, current_user: str = Depends(get_current_user)):
     """Registra una nueva factura"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -29,7 +29,7 @@ def create_factura(factura: Factura, current_user: str = Depends(get_current_use
 
 # 🔹 Obtener todas las facturas
 @router.get("/", response_model=list[Factura])
-def get_facturas(current_user: str = Depends(get_current_user)):
+def get_invoices(current_user: str = Depends(get_current_user)):
     """Devuelve todas las facturas registradas"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -44,7 +44,7 @@ def get_facturas(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener una factura por ID
 @router.get("/{invoice_id}", response_model=Factura)
-def get_factura(invoice_id: int, current_user: str = Depends(get_current_user)):
+def get_invoices(invoice_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve una factura específica"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -62,7 +62,7 @@ def get_factura(invoice_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar factura
 @router.put("/{invoice_id}", response_model=Factura)
-def update_factura(invoice_id: int, factura: Factura, current_user: str = Depends(get_current_user)):
+def update_invoices(invoice_id: int, factura: Factura, current_user: str = Depends(get_current_user)):
     """Actualiza una factura"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -78,7 +78,7 @@ def update_factura(invoice_id: int, factura: Factura, current_user: str = Depend
 
 # 🔹 Eliminar factura
 @router.delete("/{invoice_id}")
-def delete_factura(invoice_id: int, current_user: str = Depends(get_current_user)):
+def delete_invoices(invoice_id: int, current_user: str = Depends(get_current_user)):
     """Elimina una factura por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

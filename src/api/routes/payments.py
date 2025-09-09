@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.db.database import get_db_connection
-from src.models.pago import Pago
+from src.models.payment import Pago
 from src.core.security import get_current_user
 
 router = APIRouter()
 
 # 🔹 Crear un pago
 @router.post("/", response_model=Pago)
-def create_pago(pago: Pago, current_user: str = Depends(get_current_user)):
+def create_payments(pago: Pago, current_user: str = Depends(get_current_user)):
     """Registra un nuevo pago"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -29,7 +29,7 @@ def create_pago(pago: Pago, current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener todos los pagos
 @router.get("/", response_model=list[Pago])
-def get_pagos(current_user: str = Depends(get_current_user)):
+def get_payments(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todos los pagos"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -44,7 +44,7 @@ def get_pagos(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener un pago por ID
 @router.get("/{payment_id}", response_model=Pago)
-def get_pago(payment_id: int, current_user: str = Depends(get_current_user)):
+def get_payments(payment_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un pago por su ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -62,7 +62,7 @@ def get_pago(payment_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar estado del pago
 @router.put("/{payment_id}", response_model=Pago)
-def update_pago(payment_id: int, pago: Pago, current_user: str = Depends(get_current_user)):
+def update_payments(payment_id: int, pago: Pago, current_user: str = Depends(get_current_user)):
     """Actualiza el estado del pago"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -78,7 +78,7 @@ def update_pago(payment_id: int, pago: Pago, current_user: str = Depends(get_cur
 
 # 🔹 Eliminar un pago
 @router.delete("/{payment_id}")
-def delete_pago(payment_id: int, current_user: str = Depends(get_current_user)):
+def delete_payments(payment_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un pago por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

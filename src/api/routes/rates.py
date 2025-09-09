@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.db.database import get_db_connection
-from src.models.tarifa import Tarifa
+from src.models.rate import Tarifa
 from src.core.security import get_current_user  # Protección de rutas
 
 router = APIRouter()
 
 # 🔹 Crear Tarifa
 @router.post("/", response_model=Tarifa)
-def create_tarifa(tarifa: Tarifa, current_user: str = Depends(get_current_user)):
+def create_rates(tarifa: Tarifa, current_user: str = Depends(get_current_user)):
     """Registra una nueva tarifa"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -28,7 +28,7 @@ def create_tarifa(tarifa: Tarifa, current_user: str = Depends(get_current_user))
 
 # 🔹 Obtener todas las Tarifas
 @router.get("/", response_model=list[Tarifa])
-def get_tarifas(current_user: str = Depends(get_current_user)):
+def get_rates(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todas las tarifas"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -47,7 +47,7 @@ def get_tarifas(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Tarifa por ID
 @router.get("/{rate_id}", response_model=Tarifa)
-def get_tarifa(rate_id: int, current_user: str = Depends(get_current_user)):
+def get_rates(rate_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve una tarifa por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -68,7 +68,7 @@ def get_tarifa(rate_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar Tarifa
 @router.put("/{rate_id}", response_model=Tarifa)
-def update_tarifa(rate_id: int, tarifa: Tarifa, current_user: str = Depends(get_current_user)):
+def update_rates(rate_id: int, tarifa: Tarifa, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de una tarifa"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -84,7 +84,7 @@ def update_tarifa(rate_id: int, tarifa: Tarifa, current_user: str = Depends(get_
 
 # 🔹 Eliminar Tarifa
 @router.delete("/{rate_id}")
-def delete_tarifa(rate_id: int, current_user: str = Depends(get_current_user)):
+def delete_rates(rate_id: int, current_user: str = Depends(get_current_user)):
     """Elimina una tarifa por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

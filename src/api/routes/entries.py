@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.db.database import get_db_connection
-from src.models.registro_ingreso import RegistroIngreso, EstadoRegistro
+from src.models.entry import RegistroIngreso, EstadoRegistro
 from src.core.security import get_current_user  # Protección de rutas
 
 router = APIRouter()
 
 # 🔹 Crear Registro de Ingreso
 @router.post("/", response_model=RegistroIngreso)
-def create_registro(registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
+def create_entries(registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
     """Registra un nuevo ingreso de vehículo"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -30,7 +30,7 @@ def create_registro(registro: RegistroIngreso, current_user: str = Depends(get_c
 
 # 🔹 Obtener todos los Registros de Ingreso
 @router.get("/", response_model=list[RegistroIngreso])
-def get_registros(current_user: str = Depends(get_current_user)):
+def get_entries(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todos los registros de ingreso"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -51,7 +51,7 @@ def get_registros(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Registro por ID
 @router.get("/{entry_id}", response_model=RegistroIngreso)
-def get_registro(entry_id: int, current_user: str = Depends(get_current_user)):
+def get_entries(entry_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -74,7 +74,7 @@ def get_registro(entry_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar Registro de Ingreso
 @router.put("/{entry_id}", response_model=RegistroIngreso)
-def update_registro(entry_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
+def update_entries(entry_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un registro de ingreso"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -96,7 +96,7 @@ def update_registro(entry_id: int, registro: RegistroIngreso, current_user: str 
 
 # 🔹 Finalizar Registro de Ingreso
 @router.put("/{entry_id}/finalizar")
-def finalizar_registro(entry_id: int, current_user: str = Depends(get_current_user)):
+def finalizar_entries(entry_id: int, current_user: str = Depends(get_current_user)):
     """Marca un registro de ingreso como finalizado, calcula tiempo y monto total"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -141,7 +141,7 @@ def finalizar_registro(entry_id: int, current_user: str = Depends(get_current_us
 
 # 🔹 Eliminar Registro de Ingreso
 @router.delete("/{entry_id}")
-def delete_registro(entry_id: int, current_user: str = Depends(get_current_user)):
+def delete_entries(entry_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

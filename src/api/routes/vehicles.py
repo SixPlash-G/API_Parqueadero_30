@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 from src.db.database import get_db_connection
-from src.models.vehiculo import Vehiculo
+from src.models.vehicle import Vehiculo
 from src.core.security import get_current_user  # Protección de rutas
 
 router = APIRouter()
 
 # 🔹 Crear Vehículo
 @router.post("/", response_model=Vehiculo)
-def create_vehiculo(vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
+def create_vehicles(vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
     """Registra un nuevo vehículo"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -28,7 +28,7 @@ def create_vehiculo(vehiculo: Vehiculo, current_user: str = Depends(get_current_
 
 # 🔹 Obtener todos los Vehículos
 @router.get("/", response_model=list[Vehiculo])
-def get_vehiculos(current_user: str = Depends(get_current_user)):
+def get_vehicles(current_user: str = Depends(get_current_user)):
     """Devuelve la lista de todos los vehículos"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -47,7 +47,7 @@ def get_vehiculos(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Vehículo por ID
 @router.get("/{vehicle_id}", response_model=Vehiculo)
-def get_vehiculo(vehicle_id: int, current_user: str = Depends(get_current_user)):
+def get_vehicles(vehicle_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un vehículo por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -68,7 +68,7 @@ def get_vehiculo(vehicle_id: int, current_user: str = Depends(get_current_user))
 
 # 🔹 Actualizar Vehículo
 @router.put("/{vehicle_id}", response_model=Vehiculo)
-def update_vehiculo(vehicle_id: int, vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
+def update_vehicles(vehicle_id: int, vehiculo: Vehiculo, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un vehículo"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -84,7 +84,7 @@ def update_vehiculo(vehicle_id: int, vehiculo: Vehiculo, current_user: str = Dep
 
 # 🔹 Eliminar Vehículo
 @router.delete("/{vehicle_id}")
-def delete_vehiculo(vehicle_id: int, current_user: str = Depends(get_current_user)):
+def delete_vehicles(vehicle_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un vehículo por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
