@@ -7,7 +7,7 @@ router = APIRouter()
 
 # 🔹 Crear Parqueadero
 @router.post("/", response_model=Parqueadero)
-def create_parkings(parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
+def create_parking(parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
     """Registra un nuevo parqueadero"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -47,7 +47,7 @@ def get_parkings(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Parqueadero por ID
 @router.get("/{parking_id}", response_model=Parqueadero)
-def get_parkings(parking_id: int, current_user: str = Depends(get_current_user)):
+def get_parking(parking_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -68,7 +68,7 @@ def get_parkings(parking_id: int, current_user: str = Depends(get_current_user))
 
 # 🔹 Actualizar Parqueadero
 @router.put("/{parking_id}", response_model=Parqueadero)
-def update_parkings(parking_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
+def update_parking(parking_id: int, parqueadero: Parqueadero, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un parqueadero"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -84,7 +84,7 @@ def update_parkings(parking_id: int, parqueadero: Parqueadero, current_user: str
 
 # 🔹 Eliminar Parqueadero
 @router.delete("/{parking_id}")
-def delete_parkings(parking_id: int, current_user: str = Depends(get_current_user)):
+def delete_parking(parking_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un parqueadero por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()

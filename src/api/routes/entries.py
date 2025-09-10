@@ -7,7 +7,7 @@ router = APIRouter()
 
 # 🔹 Crear Registro de Ingreso
 @router.post("/", response_model=RegistroIngreso)
-def create_entries(registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
+def create_entry(registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
     """Registra un nuevo ingreso de vehículo"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -51,7 +51,7 @@ def get_entries(current_user: str = Depends(get_current_user)):
 
 # 🔹 Obtener Registro por ID
 @router.get("/{entry_id}", response_model=RegistroIngreso)
-def get_entries(entry_id: int, current_user: str = Depends(get_current_user)):
+def get_entry(entry_id: int, current_user: str = Depends(get_current_user)):
     """Devuelve un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -74,7 +74,7 @@ def get_entries(entry_id: int, current_user: str = Depends(get_current_user)):
 
 # 🔹 Actualizar Registro de Ingreso
 @router.put("/{entry_id}", response_model=RegistroIngreso)
-def update_entries(entry_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
+def update_entry(entry_id: int, registro: RegistroIngreso, current_user: str = Depends(get_current_user)):
     """Actualiza los datos de un registro de ingreso"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -96,7 +96,7 @@ def update_entries(entry_id: int, registro: RegistroIngreso, current_user: str =
 
 # 🔹 Finalizar Registro de Ingreso
 @router.put("/{entry_id}/finalizar")
-def finalizar_entries(entry_id: int, current_user: str = Depends(get_current_user)):
+def finalizar_entry(entry_id: int, current_user: str = Depends(get_current_user)):
     """Marca un registro de ingreso como finalizado, calcula tiempo y monto total"""
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -141,7 +141,7 @@ def finalizar_entries(entry_id: int, current_user: str = Depends(get_current_use
 
 # 🔹 Eliminar Registro de Ingreso
 @router.delete("/{entry_id}")
-def delete_entries(entry_id: int, current_user: str = Depends(get_current_user)):
+def delete_entry(entry_id: int, current_user: str = Depends(get_current_user)):
     """Elimina un registro de ingreso por ID"""
     conn = get_db_connection()
     cursor = conn.cursor()
